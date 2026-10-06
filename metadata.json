@@ -1,0 +1,6 @@
+{
+  "name": "Việt Phục Remix - AI Stylist",
+  "description": "Nền tảng khám phá, phối đồ AI và thử trang phục truyền thống Việt Nam (Áo Tấc, Nhật Bình, Ngũ Thân, Giao Lĩnh) kết hợp hiện đại chuẩn mực văn hóa.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
