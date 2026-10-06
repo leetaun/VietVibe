@@ -1,7 +1,7 @@
 import React from 'react';
 import { OutfitPiece, Garment, CulturalCheckResult } from '../types';
 import { runCulturalCompatibilityCheck } from '../data/culturalRules';
-import { X, ShieldCheck, AlertTriangle, Wand2, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { X, ShieldCheck, AlertTriangle, Wand2, ArrowRight } from 'lucide-react';
 
 interface CulturalCheckModalProps {
   isOpen: boolean;
@@ -29,15 +29,16 @@ export const CulturalCheckModal: React.FC<CulturalCheckModalProps> = ({
   );
 
   const handleFixAll = () => {
-    // Apply fixes
     result.issues.forEach(issue => {
       issue.fixAction();
     });
   };
 
+  const firstIssue = result.issues[0];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-[#141722] rounded-2xl border border-amber-900/50 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="relative w-full max-w-3xl bg-[#141722] rounded-2xl border border-amber-900/50 shadow-2xl overflow-hidden my-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -46,146 +47,115 @@ export const CulturalCheckModal: React.FC<CulturalCheckModalProps> = ({
           <X className="w-5 h-5" />
         </button>
 
-        {/* Modal Header */}
-        <div className="p-6 border-b border-stone-800 bg-[#171b28]">
+        {/* Top Header: Matching PDF STT 7 */}
+        <div className="p-6 border-b border-stone-800 bg-[#161926]">
           <div className="text-xs font-semibold text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-amber-400" />
-            <span>AI Cultural Guardrail</span>
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            <span>KIỂM TRA ĐỘ PHÙ HỢP VĂN HÓA (CULTURAL CHECK)</span>
           </div>
-          <h2 className="font-serif text-2xl font-bold text-amber-100 mt-1">
-            Kiểm Tra Độ Phù Hợp Văn Hóa (Cultural Check)
+          <h2 className="font-serif text-2xl font-bold text-stone-100 mt-1">
+            Màn hình Kiểm tra tính phù hợp văn hóa
           </h2>
-          <p className="text-stone-400 text-xs mt-1">
-            Đối chiếu quy chuẩn di sản của {garment.name} ({garment.dynastyLabel})
+          <p className="text-stone-400 text-xs">
+            Hệ thống đối chiếu tự động với quy chuẩn lễ phục {garment.name} ({garment.dynastyLabel})
           </p>
         </div>
 
-        {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-6">
-          {/* 1. Thẻ đánh giá tổng quan (Guardrail Status) */}
-          <div
-            className={`p-5 rounded-2xl border text-center space-y-2 ${
-              result.isCompatible
-                ? 'bg-emerald-950/25 border-emerald-500/50 text-emerald-200'
-                : result.statusType === 'danger'
-                ? 'bg-red-950/30 border-red-500/60 text-red-200'
-                : 'bg-amber-950/25 border-amber-500/50 text-amber-200'
-            }`}
-          >
-            <div className="w-12 h-12 rounded-full mx-auto flex items-center justify-center bg-black/30">
-              {result.isCompatible ? (
-                <ShieldCheck className="w-7 h-7 text-emerald-400" />
-              ) : (
-                <AlertTriangle className="w-7 h-7 text-amber-400" />
-              )}
-            </div>
-            <div className="font-serif text-xl font-bold tracking-wide">
-              {result.statusText}
-            </div>
-            <p className="text-xs opacity-90 max-w-md mx-auto">
-              {result.isCompatible
-                ? 'Tuyệt vời! Cách phối đồ của bạn tuân thủ hoàn hảo quy cách trang phục truyền thống, tôn vinh trọn vẹn nét tôn nghiêm của di sản.'
-                : 'Hệ thống phát hiện một số chi tiết phối phụ kiện có nguy cơ làm giảm tính trang trọng hoặc sai lệch quy chuẩn lịch sử.'}
-            </p>
-          </div>
-
-          {/* 2. Danh sách chi tiết kiểm tra & Gợi ý chuẩn hóa */}
+        {/* Body Container */}
+        <div className="p-6 space-y-6">
+          {/* LARGE GUARDRAIL STATUS CARD (Matching PDF STT 7 Mockup) */}
           {result.issues.length > 0 ? (
-            <div className="space-y-4">
-              <div className="text-xs font-bold text-stone-300 uppercase tracking-wider">
-                Chi tiết các điểm cần lưu ý:
+            <div className="rounded-2xl border border-red-900/60 overflow-hidden bg-[#181a26] shadow-xl">
+              {/* Alert Header Ribbon */}
+              <div className="bg-gradient-to-r from-red-900 via-red-800 to-amber-900 px-5 py-3 text-white font-bold text-sm tracking-wide flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-300 shrink-0" />
+                <span>CẢNH BÁO: CHƯA PHÙ HỢP QUY CHUẨN LỊCH SỬ</span>
               </div>
 
-              {result.issues.map((issue) => (
-                <div
-                  key={issue.id}
-                  className="p-4 rounded-xl bg-[#191d2b] border border-amber-500/30 space-y-3"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-amber-400" />
-                        <span>{issue.title}</span>
-                      </div>
-                      <p className="text-xs text-stone-300 leading-relaxed font-light">
-                        {issue.message}
-                      </p>
-                    </div>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-red-950/60 text-red-300 border border-red-800 shrink-0">
-                      Cảnh báo
-                    </span>
+              {/* Split Content: Left image with item, Right explanation & action */}
+              <div className="p-6 flex flex-col md:flex-row gap-6 items-center">
+                {/* Left image of the clashing combination */}
+                <div className="relative w-40 h-52 rounded-xl overflow-hidden bg-black shrink-0 border border-stone-700 shadow-md">
+                  <img
+                    src={garment.imageUrl}
+                    alt={garment.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-red-950/25 mix-blend-color" />
+                  <div className="absolute bottom-2 left-2 right-2 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-[10px] text-red-300 border border-red-700 text-center font-bold">
+                    ⚠️ {firstIssue?.violatingItem || 'Phụ kiện xung đột'}
+                  </div>
+                </div>
+
+                {/* Right detailed critique and suggestion */}
+                <div className="flex-1 space-y-4 text-xs">
+                  <div className="text-stone-200 leading-relaxed space-y-1.5">
+                    <p className="font-bold text-amber-300 text-sm">
+                      {firstIssue?.title || 'Phát hiện phụ kiện chưa phù hợp'}
+                    </p>
+                    <p className="text-stone-300">
+                      {firstIssue?.message ||
+                        `Bạn đang phối ${garment.name} với phụ kiện hiện đại chưa đúng bối cảnh. Việc này có thể làm giảm tính nghiêm cẩn của trang phục.`}
+                    </p>
                   </div>
 
                   {/* AI Suggestion Box */}
-                  <div className="p-3 rounded-lg bg-black/40 border border-amber-500/20 text-xs space-y-1.5">
-                    <div className="text-[11px] font-semibold text-amber-400 flex items-center gap-1">
-                      <Wand2 className="w-3.5 h-3.5" />
-                      <span>Đề xuất chuẩn hóa bởi AI:</span>
+                  <div className="p-3.5 rounded-xl bg-black/40 border border-amber-500/30 text-xs space-y-1">
+                    <div className="text-[11px] font-bold text-amber-400">
+                      Đề xuất chuẩn hóa bởi AI:
                     </div>
-                    <p className="text-stone-300 text-xs font-light">
-                      {issue.suggestion}
+                    <p className="text-stone-200 font-light">
+                      {firstIssue?.suggestion ||
+                        'Đề xuất thay thế bằng Hài Nhung Thêu Truyền Thống hoặc Guốc Mộc.'}
                     </p>
                   </div>
+
+                  {/* Actions right on card (matching PDF mockup) */}
+                  <div className="flex flex-wrap items-center gap-3 pt-2">
+                    <button
+                      onClick={handleFixAll}
+                      className="py-2.5 px-5 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-stone-950 font-bold text-xs shadow-lg shadow-amber-950/40 transition flex items-center gap-2 cursor-pointer"
+                    >
+                      <Wand2 className="w-4 h-4 text-stone-950" />
+                      <span>TỰ ĐỘNG SỬA NHANH BỞI AI</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        onClose();
+                        onProceedToTryOn();
+                      }}
+                      className="py-2.5 px-4 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white text-xs font-semibold transition cursor-pointer"
+                    >
+                      BỎ QUA CẢNH BÁO
+                    </button>
+                  </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-4 rounded-xl bg-[#191d2b] border border-stone-800 space-y-2 text-xs text-stone-300">
-              <div className="flex items-center gap-2 font-semibold text-emerald-400">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Mọi tiêu chí đều đạt chuẩn:</span>
               </div>
-              <ul className="space-y-1 pl-6 list-disc text-stone-400">
-                <li>Phom dáng lễ phục đoan trang, đúng quy chế</li>
-                <li>Phụ kiện đội đầu và hài guốc tương hợp thời kỳ lịch sử</li>
-                <li>Không vi phạm thuần phong mỹ tục hoặc kết hợp dị biệt</li>
-              </ul>
             </div>
-          )}
-        </div>
-
-        {/* Modal Actions */}
-        <div className="p-5 border-t border-stone-800 bg-[#171b28] flex flex-col sm:flex-row items-center justify-between gap-3">
-          {result.issues.length > 0 ? (
-            <>
-              <button
-                onClick={handleFixAll}
-                className="w-full sm:w-auto flex-1 py-3 px-5 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-stone-950 font-bold text-xs tracking-wide shadow-lg shadow-amber-950/40 transition flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Wand2 className="w-4 h-4 text-stone-950" />
-                <span>TỰ ĐỘNG SỬA NHANH BỞI AI</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  onClose();
-                  onProceedToTryOn();
-                }}
-                className="w-full sm:w-auto py-3 px-4 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white font-semibold text-xs transition cursor-pointer"
-              >
-                Bỏ qua cảnh báo & Thử đồ
-              </button>
-            </>
           ) : (
-            <>
-              <button
-                onClick={onClose}
-                className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs font-semibold transition cursor-pointer"
-              >
-                Đóng & Tiếp tục tùy chỉnh
-              </button>
-
-              <button
-                onClick={() => {
-                  onClose();
-                  onProceedToTryOn();
-                }}
-                className="w-full sm:w-auto flex-1 py-3 px-5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs tracking-wide shadow-lg shadow-emerald-950/40 transition flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <span>TIẾN HÀNH THỬ ĐỒ BẰNG AI</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </>
+            /* Perfectly Compatible Card */
+            <div className="p-8 rounded-2xl bg-emerald-950/20 border border-emerald-500/40 text-center space-y-3">
+              <ShieldCheck className="w-12 h-12 text-emerald-400 mx-auto" />
+              <h3 className="font-serif text-xl font-bold text-emerald-300">
+                PHÙ HỢP CHUẨN MỰC LỊCH SỬ & VĂN HÓA (100%)
+              </h3>
+              <p className="text-xs text-stone-300 max-w-md mx-auto">
+                Bản phối của bạn tuân thủ chuẩn xác quy chế di sản của {garment.name}. Màu sắc và phụ kiện đi kèm tôn vinh trọn vẹn nét tôn nghiêm truyền thống.
+              </p>
+              <div className="pt-3">
+                <button
+                  onClick={() => {
+                    onClose();
+                    onProceedToTryOn();
+                  }}
+                  className="py-3 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs tracking-wide shadow-xl shadow-emerald-950/40 transition flex items-center justify-center gap-2 mx-auto cursor-pointer"
+                >
+                  <span>TIẾN HÀNH THỬ ĐỒ BẰNG AI</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           )}
         </div>
       </div>

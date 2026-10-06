@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Garment, OutfitPiece, Accessory, CulturalCheckResult } from '../types';
 import { ACCESSORIES } from '../data/accessories';
 import { runCulturalCompatibilityCheck } from '../data/culturalRules';
+import { OutfitMockupCanvas } from './OutfitMockupCanvas';
 import {
   ShieldCheck,
   AlertTriangle,
@@ -9,10 +10,11 @@ import {
   Sparkles,
   Camera,
   CheckCircle2,
-  RefreshCw,
-  Palette,
+  ChevronRight,
   Layers,
-  ZoomIn
+  ArrowRight,
+  RefreshCw,
+  Palette
 } from 'lucide-react';
 
 interface OutfitBuilderViewProps {
@@ -32,33 +34,32 @@ export const OutfitBuilderView: React.FC<OutfitBuilderViewProps> = ({
   onProceedToTryOn,
   onBackToWizard
 }) => {
-  const [activeTabSide, setActiveTabSide] = useState<'colors' | 'accessories'>('colors');
-  const [selectedComponent, setSelectedComponent] = useState<'main' | 'pants' | 'head' | 'hand' | 'neck' | 'foot'>('main');
+  const [selectedComponent, setSelectedComponent] = useState<
+    'main' | 'inner' | 'pants' | 'head' | 'hand' | 'neck' | 'foot'
+  >('main');
 
-  // Run realtime cultural check indicator
+  // Realtime Cultural Check
   const culturalStatus: CulturalCheckResult = runCulturalCompatibilityCheck(outfit, garment);
 
-  // Quick palette colors
+  // Traditional Fabric Colors
   const fabricColors = [
-    { name: 'Đỏ thắm hoàng gia', value: '#9e1a1a' },
-    { name: 'Đỏ son truyền thống', value: '#b91c1c' },
     { name: 'Xanh chàm cổ phong', value: '#1e3a5f' },
-    { name: 'Xanh lam đại dương', value: '#1d4ed8' },
+    { name: 'Đỏ thắm cung đình', value: '#9e1a1a' },
+    { name: 'Vàng hoàng gia', value: '#d97706' },
     { name: 'Xanh lục bảo', value: '#15803d' },
-    { name: 'Vàng hoàng kim', value: '#d97706' },
-    { name: 'Vàng mơ nhã nhặn', value: '#ca8a04' },
+    { name: 'Tím hoa cà', value: '#6b21a8' },
     { name: 'Nâu đất nung', value: '#854d0e' },
-    { name: 'Tím hoa cà cung đình', value: '#6b21a8' },
+    { name: 'Hồng phấn nhã nhặn', value: '#db2777' },
+    { name: 'Xanh lam đại dương', value: '#1d4ed8' },
     { name: 'Trắng lụa tơ tằm', value: '#f8fafc' },
-    { name: 'Hồng phấn thiếu nữ', value: '#db2777' },
     { name: 'Đen tuyền quý phái', value: '#18181b' }
   ];
 
   const handleColorChange = (hex: string) => {
-    if (selectedComponent === 'main') {
-      onUpdateOutfit({ ...outfit, primaryColor: hex });
-    } else if (selectedComponent === 'pants') {
+    if (selectedComponent === 'pants') {
       onUpdateOutfit({ ...outfit, pantsColor: hex });
+    } else {
+      onUpdateOutfit({ ...outfit, primaryColor: hex });
     }
   };
 
@@ -75,441 +76,383 @@ export const OutfitBuilderView: React.FC<OutfitBuilderViewProps> = ({
     });
   };
 
-  const handleRemoveAccessory = (category: 'head' | 'hand' | 'neck' | 'foot') => {
-    const updatedAcc = { ...outfit.accessories };
-    delete updatedAcc[category];
-    onUpdateOutfit({
-      ...outfit,
-      accessories: updatedAcc
-    });
-  };
-
   return (
-    <div className="space-y-6 pb-20">
-      {/* Top Banner & Cultural Indicator */}
-      <div className="bg-[#141722] p-4 sm:p-5 rounded-2xl border border-stone-800 flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg">
+    <div className="space-y-6 pb-20 max-w-7xl mx-auto">
+      {/* Top Header matching PDF: "Việt Phục AI Stylist | AI GỢI Ý & TÙY CHỈNH OUTFIT" */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-stone-800">
         <div>
-          <div className="text-xs font-semibold text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Visual Outfit Builder</span>
+          <div className="flex items-center gap-2 text-xs font-semibold text-amber-400 uppercase tracking-widest">
+            <span className="font-serif">Việt Phục AI Stylist</span>
+            <span>·</span>
+            <span>Bản phối thông minh</span>
           </div>
-          <h1 className="font-serif text-2xl font-bold text-stone-100 mt-0.5">
-            AI Gợi Ý & Tùy Chỉnh Outfit
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-100 mt-0.5">
+            AI GỢI Ý & TÙY CHỈNH OUTFIT
           </h1>
-          <p className="text-stone-400 text-xs">
-            Đang phối: <span className="text-amber-300 font-semibold">{garment.name}</span> ({garment.dynastyLabel.split('(')[0].trim()})
+          <p className="text-xs text-stone-400">
+            Dáng áo: <span className="text-amber-300 font-semibold">{garment.name}</span> ({garment.dynastyLabel})
           </p>
         </div>
 
-        {/* REAL-TIME CULTURAL INDICATOR */}
-        <div
-          onClick={onOpenCulturalCheck}
-          className={`cursor-pointer px-4 py-2.5 rounded-xl border transition flex items-center gap-3 w-full md:w-auto ${
-            culturalStatus.isCompatible
-              ? 'bg-emerald-950/30 border-emerald-500/40 hover:bg-emerald-950/50'
-              : culturalStatus.statusType === 'danger'
-              ? 'bg-red-950/40 border-red-500/50 hover:bg-red-950/60'
-              : 'bg-amber-950/30 border-amber-500/40 hover:bg-amber-950/50'
-          }`}
+        <button
+          onClick={onBackToWizard}
+          className="text-xs text-stone-400 hover:text-amber-300 underline self-start sm:self-auto cursor-pointer"
         >
-          <div className="flex items-center gap-2">
-            {culturalStatus.isCompatible ? (
-              <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
-            ) : (
-              <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 animate-pulse" />
-            )}
-            <div className="text-left">
-              <div className="text-xs font-bold leading-tight flex items-center gap-1.5">
-                <span
-                  className={
-                    culturalStatus.isCompatible
-                      ? 'text-emerald-300'
-                      : culturalStatus.statusType === 'danger'
-                      ? 'text-red-300'
-                      : 'text-amber-300'
-                  }
-                >
-                  {culturalStatus.statusText}
-                </span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-black/40 font-mono">
-                  {culturalStatus.score}%
-                </span>
-              </div>
-              <div className="text-[10px] text-stone-400">
-                {culturalStatus.issues.length === 0
-                  ? 'Bấm để xem phân tích quy chuẩn văn hóa'
-                  : `Phát hiện ${culturalStatus.issues.length} điểm cần lưu ý · Bấm để xem`}
-              </div>
-            </div>
-          </div>
-        </div>
+          ← Đổi bối cảnh / phong cách khác
+        </button>
       </div>
 
-      {/* Main 3-Column Studio Layout */}
+      {/* Main 3-Column Layout: Left (Thành phần) - Center (Mockup Preview) - Right (Tùy chỉnh & Phụ kiện) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* COLUMN 1 (Left - 3 Cols): Lựa chọn & Thành phần */}
-        <div className="lg:col-span-3 bg-[#141722] p-5 rounded-2xl border border-stone-800 space-y-4">
+        {/* COLUMN 1: Cột Trái (3 cols) - "Lựa chọn & Thành phần" */}
+        <div className="lg:col-span-3 bg-[#131620] rounded-2xl border border-stone-800/90 p-5 space-y-4 shadow-xl">
           <div className="flex items-center justify-between pb-3 border-b border-stone-800">
-            <h3 className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+            <h2 className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
               <Layers className="w-4 h-4 text-amber-400" />
-              <span>Thành phần trang phục</span>
-            </h3>
+              <span>Lựa chọn & Thành phần</span>
+            </h2>
           </div>
 
-          <div className="space-y-2">
-            {/* Áo chính */}
+          <div className="space-y-2.5">
+            {/* 1. Áo chính */}
             <button
               onClick={() => setSelectedComponent('main')}
-              className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between ${
+              className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between gap-2.5 cursor-pointer ${
                 selectedComponent === 'main'
-                  ? 'bg-amber-950/20 border-amber-400 text-amber-200 shadow-sm'
+                  ? 'bg-amber-950/30 border-amber-400 ring-1 ring-amber-500/40 text-amber-200'
                   : 'bg-stone-900/80 border-stone-800 text-stone-300 hover:border-stone-700'
               }`}
             >
-              <div>
-                <div className="text-xs font-semibold">Áo chính</div>
-                <div className="text-[11px] text-stone-400 font-light truncate">{garment.name}</div>
+              <div className="flex items-center gap-3 min-w-0">
+                <div
+                  className="w-10 h-10 rounded-lg overflow-hidden border border-stone-700 shrink-0 bg-stone-950 flex items-center justify-center"
+                  style={{ backgroundColor: outfit.primaryColor }}
+                >
+                  <img
+                    src={garment.imageUrl}
+                    alt={garment.name}
+                    className="w-full h-full object-cover mix-blend-overlay opacity-80"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[11px] text-stone-400 font-medium">Áo chính</div>
+                  <div className="text-xs font-bold text-stone-100 truncate">{garment.name}</div>
+                </div>
               </div>
-              <div
-                className="w-5 h-5 rounded-full border border-white/20 shadow-sm"
-                style={{ backgroundColor: outfit.primaryColor }}
-              />
+              <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
             </button>
 
-            {/* Quần lụa */}
+            {/* 2. Áo lót trong (Bạch y) */}
+            <button
+              onClick={() => setSelectedComponent('inner')}
+              className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between gap-2.5 cursor-pointer ${
+                selectedComponent === 'inner'
+                  ? 'bg-amber-950/30 border-amber-400 ring-1 ring-amber-500/40 text-amber-200'
+                  : 'bg-stone-900/80 border-stone-800 text-stone-300 hover:border-stone-700'
+              }`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-lg overflow-hidden border border-stone-700 shrink-0 bg-white flex items-center justify-center">
+                  <span className="text-[9px] font-bold text-stone-700">LỤA</span>
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[11px] text-stone-400 font-medium">Áo lót trong</div>
+                  <div className="text-xs font-bold text-stone-100 truncate">Bạch y tơ tằm</div>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
+            </button>
+
+            {/* 3. Quần / Váy */}
             <button
               onClick={() => setSelectedComponent('pants')}
-              className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between ${
+              className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between gap-2.5 cursor-pointer ${
                 selectedComponent === 'pants'
-                  ? 'bg-amber-950/20 border-amber-400 text-amber-200 shadow-sm'
+                  ? 'bg-amber-950/30 border-amber-400 ring-1 ring-amber-500/40 text-amber-200'
                   : 'bg-stone-900/80 border-stone-800 text-stone-300 hover:border-stone-700'
               }`}
             >
-              <div>
-                <div className="text-xs font-semibold">Quần / Váy lụa</div>
-                <div className="text-[11px] text-stone-400 font-light">Lụa tơ tằm cổ truyền</div>
+              <div className="flex items-center gap-3 min-w-0">
+                <div
+                  className="w-10 h-10 rounded-lg overflow-hidden border border-stone-700 shrink-0 flex items-center justify-center shadow-inner"
+                  style={{ backgroundColor: outfit.pantsColor || '#ffffff' }}
+                >
+                  <span className="text-[9px] font-bold text-stone-800">QUẦN</span>
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[11px] text-stone-400 font-medium">Quần / Váy</div>
+                  <div className="text-xs font-bold text-stone-100 truncate">Quần lụa trắng</div>
+                </div>
               </div>
-              <div
-                className="w-5 h-5 rounded-full border border-white/20 shadow-sm"
-                style={{ backgroundColor: outfit.pantsColor }}
-              />
+              <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
             </button>
 
-            {/* Phụ kiện đầu */}
+            {/* 4. Phụ kiện đầu */}
             <button
-              onClick={() => {
-                setSelectedComponent('head');
-                setActiveTabSide('accessories');
-              }}
-              className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between ${
+              onClick={() => setSelectedComponent('head')}
+              className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between gap-2.5 cursor-pointer ${
                 selectedComponent === 'head'
-                  ? 'bg-amber-950/20 border-amber-400 text-amber-200'
+                  ? 'bg-amber-950/30 border-amber-400 ring-1 ring-amber-500/40 text-amber-200'
                   : 'bg-stone-900/80 border-stone-800 text-stone-300 hover:border-stone-700'
               }`}
             >
-              <div>
-                <div className="text-xs font-semibold">Phụ kiện đầu</div>
-                <div className="text-[11px] text-stone-400 font-light truncate">
-                  {outfit.accessories.head?.name || 'Chưa chọn'}
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-lg overflow-hidden border border-stone-700 shrink-0 bg-stone-950">
+                  <img
+                    src={outfit.accessories.head?.imageUrl || ACCESSORIES[0].imageUrl}
+                    alt="Đầu"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[11px] text-stone-400 font-medium">Phụ kiện đầu</div>
+                  <div className="text-xs font-bold text-stone-100 truncate">
+                    {outfit.accessories.head?.name || 'Mấn hoàng gia'}
+                  </div>
                 </div>
               </div>
-              <span className="text-[10px] text-amber-400 font-medium">Đổi</span>
+              <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
             </button>
 
-            {/* Cầm tay */}
+            {/* 5. Cầm tay */}
             <button
-              onClick={() => {
-                setSelectedComponent('hand');
-                setActiveTabSide('accessories');
-              }}
-              className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between ${
+              onClick={() => setSelectedComponent('hand')}
+              className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between gap-2.5 cursor-pointer ${
                 selectedComponent === 'hand'
-                  ? 'bg-amber-950/20 border-amber-400 text-amber-200'
+                  ? 'bg-amber-950/30 border-amber-400 ring-1 ring-amber-500/40 text-amber-200'
                   : 'bg-stone-900/80 border-stone-800 text-stone-300 hover:border-stone-700'
               }`}
             >
-              <div>
-                <div className="text-xs font-semibold">Cầm tay</div>
-                <div className="text-[11px] text-stone-400 font-light truncate">
-                  {outfit.accessories.hand?.name || 'Chưa chọn'}
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-lg overflow-hidden border border-stone-700 shrink-0 bg-stone-950">
+                  <img
+                    src={outfit.accessories.hand?.imageUrl || ACCESSORIES[4].imageUrl}
+                    alt="Cầm tay"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[11px] text-stone-400 font-medium">Cầm tay</div>
+                  <div className="text-xs font-bold text-stone-100 truncate">
+                    {outfit.accessories.hand?.name || 'Quạt giấy điệp'}
+                  </div>
                 </div>
               </div>
-              <span className="text-[10px] text-amber-400 font-medium">Đổi</span>
+              <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
             </button>
 
-            {/* Cổ / Ngực */}
+            {/* 6. Hài / Giày */}
             <button
-              onClick={() => {
-                setSelectedComponent('neck');
-                setActiveTabSide('accessories');
-              }}
-              className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between ${
-                selectedComponent === 'neck'
-                  ? 'bg-amber-950/20 border-amber-400 text-amber-200'
-                  : 'bg-stone-900/80 border-stone-800 text-stone-300 hover:border-stone-700'
-              }`}
-            >
-              <div>
-                <div className="text-xs font-semibold">Khánh / Chuỗi ngọc / Kính</div>
-                <div className="text-[11px] text-stone-400 font-light truncate">
-                  {outfit.accessories.neck?.name || 'Chưa chọn'}
-                </div>
-              </div>
-              <span className="text-[10px] text-amber-400 font-medium">Đổi</span>
-            </button>
-
-            {/* Hài / Giày */}
-            <button
-              onClick={() => {
-                setSelectedComponent('foot');
-                setActiveTabSide('accessories');
-              }}
-              className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between ${
+              onClick={() => setSelectedComponent('foot')}
+              className={`w-full p-3 rounded-xl border text-left transition flex items-center justify-between gap-2.5 cursor-pointer ${
                 selectedComponent === 'foot'
-                  ? 'bg-amber-950/20 border-amber-400 text-amber-200'
+                  ? 'bg-amber-950/30 border-amber-400 ring-1 ring-amber-500/40 text-amber-200'
                   : 'bg-stone-900/80 border-stone-800 text-stone-300 hover:border-stone-700'
               }`}
             >
-              <div>
-                <div className="text-xs font-semibold">Hài / Guốc / Giày</div>
-                <div className="text-[11px] text-stone-400 font-light truncate">
-                  {outfit.accessories.foot?.name || 'Chưa chọn'}
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-lg overflow-hidden border border-stone-700 shrink-0 bg-stone-950">
+                  <img
+                    src={outfit.accessories.foot?.imageUrl || ACCESSORIES[11].imageUrl}
+                    alt="Giày hài"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[11px] text-stone-400 font-medium">Hài / Giày</div>
+                  <div className="text-xs font-bold text-stone-100 truncate">
+                    {outfit.accessories.foot?.name || 'Hài thêu hoa'}
+                  </div>
                 </div>
               </div>
-              <span className="text-[10px] text-amber-400 font-medium">Đổi</span>
+              <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
             </button>
           </div>
-
-          <button
-            onClick={onBackToWizard}
-            className="w-full py-2 text-center text-xs text-stone-400 hover:text-stone-200 pt-2 border-t border-stone-800/80 cursor-pointer"
-          >
-            ← Đổi phong cách / bối cảnh khác
-          </button>
         </div>
 
-        {/* COLUMN 2 (Center - 5 Cols): Mockup trực quan toàn bộ outfit */}
-        <div className="lg:col-span-5 bg-[#12141d] rounded-2xl border border-amber-900/30 p-6 flex flex-col justify-between items-center relative min-h-[520px] shadow-2xl">
-          <div className="w-full flex items-center justify-between text-xs text-stone-400 pb-2">
-            <span className="font-serif font-bold text-amber-200">Hình ảnh bộ đồ Preview</span>
-            <span className="text-[11px] text-amber-400/90 font-mono">Tương tác trực quan</span>
+        {/* COLUMN 2: Cột Giữa (5 cols) - "Hình ảnh bộ đồ Preview" */}
+        <div className="lg:col-span-5 bg-[#131620] rounded-2xl border border-stone-800/90 p-5 space-y-4 shadow-2xl flex flex-col justify-between">
+          <div className="flex items-center justify-between pb-2 border-b border-stone-800">
+            <h2 className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span>Hình ảnh bộ đồ Preview</span>
+            </h2>
+            <span className="text-[11px] text-stone-400">Mockup trực quan toàn thân</span>
           </div>
 
-          {/* Interactive Visual Outfit Mockup Canvas Area */}
-          <div className="relative w-full max-w-[340px] h-[400px] mx-auto flex items-center justify-center">
-            {/* Background Arch & Glow */}
-            <div className="absolute inset-4 rounded-t-full bg-gradient-to-b from-amber-500/10 via-amber-900/5 to-transparent border border-amber-500/20 pointer-events-none" />
+          {/* REALISTIC HIGH-FIDELITY FULL-BODY OUTFIT MOCKUP CANVAS */}
+          <OutfitMockupCanvas
+            garment={garment}
+            outfit={outfit}
+            selectedComponent={selectedComponent}
+            onSelectComponent={setSelectedComponent}
+          />
 
-            {/* Base Garment Photo with Dynamic Fabric Hue / Lighting */}
-            <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-stone-800">
-              <img
-                src={garment.imageUrl}
-                alt={garment.name}
-                className="w-full h-full object-cover transition duration-300"
-              />
-
-              {/* Tint overlay reflecting primary color selection */}
-              <div
-                className="absolute inset-0 mix-blend-color opacity-50 transition duration-300 pointer-events-none"
-                style={{ backgroundColor: outfit.primaryColor }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#12141d] via-transparent to-black/30 pointer-events-none" />
-
-              {/* Dynamic Accessory Overlays / Tags on the Mockup */}
-              {outfit.accessories.head && (
-                <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-semibold text-amber-300 border border-amber-500/30 flex items-center gap-1.5 shadow">
-                  <span>👑 {outfit.accessories.head.name}</span>
-                </div>
+          {/* CULTURAL STATUS INDICATOR & SCORE UNDER PREVIEW (Exact match PDF STT 6) */}
+          <div
+            onClick={onOpenCulturalCheck}
+            className={`cursor-pointer p-3.5 rounded-xl border transition flex items-center justify-between gap-3 ${
+              culturalStatus.isCompatible
+                ? 'bg-emerald-950/30 border-emerald-500/40 hover:bg-emerald-950/50'
+                : 'bg-red-950/30 border-red-500/50 hover:bg-red-950/50'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              {culturalStatus.isCompatible ? (
+                <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+              ) : (
+                <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 animate-pulse" />
               )}
-
-              {outfit.accessories.hand && (
-                <div className="absolute bottom-16 right-4 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-semibold text-amber-300 border border-amber-500/30 flex items-center gap-1.5 shadow">
-                  <span>🪭 {outfit.accessories.hand.name}</span>
+              <div className="text-left">
+                <div className="text-xs font-bold text-stone-100">
+                  Đánh giá mức độ phù hợp văn hóa:
                 </div>
-              )}
-
-              {outfit.accessories.foot && (
-                <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-semibold text-stone-200 border border-stone-700/80 flex items-center gap-1.5 shadow">
-                  <span>👞 {outfit.accessories.foot.name}</span>
+                <div
+                  className={`text-xs font-semibold ${
+                    culturalStatus.isCompatible ? 'text-emerald-300' : 'text-amber-300'
+                  }`}
+                >
+                  {culturalStatus.isCompatible ? '✓ Đang chuẩn mực' : '⚠️ Có cảnh báo chưa phù hợp'} (
+                  {culturalStatus.score}%)
                 </div>
-              )}
-
-              {outfit.accessories.neck && (
-                <div className="absolute top-16 right-4 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-semibold text-amber-300 border border-amber-500/30 flex items-center gap-1.5 shadow">
-                  <span>📿 {outfit.accessories.neck.name}</span>
-                </div>
-              )}
+              </div>
             </div>
+            <span className="text-[11px] text-amber-400 font-medium underline shrink-0">
+              Chi tiết →
+            </span>
           </div>
 
-          {/* Quick Action Buttons Below Mockup */}
-          <div className="w-full pt-4 grid grid-cols-2 gap-3">
+          {/* TWO PRIMARY ACTION BUTTONS (Exact match PDF STT 6) */}
+          <div className="grid grid-cols-2 gap-3 pt-2">
             <button
               onClick={onOpenCulturalCheck}
-              className="py-2.5 px-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-200 hover:text-white text-xs font-semibold border border-stone-700 transition flex items-center justify-center gap-1.5 cursor-pointer"
+              className="py-3 px-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-200 hover:text-white text-xs font-bold border border-stone-700 transition flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-              <span>TIẾP TỤC / KIỂM TRA VĂN HÓA</span>
+              <ShieldCheck className="w-4 h-4 text-amber-400" />
+              <span className="truncate">TIẾP TỤC / KIỂM TRA VĂN HÓA</span>
             </button>
 
             <button
               onClick={onProceedToTryOn}
-              className="py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-950/40 cursor-pointer"
+              className="py-3 px-3 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-stone-950 text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-950/40 cursor-pointer"
             >
-              <Camera className="w-3.5 h-3.5" />
+              <Camera className="w-4 h-4 text-stone-950" />
               <span>AI TRY-ON</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
-        {/* COLUMN 3 (Right - 4 Cols): Bảng công cụ tùy chỉnh (Side Panel) */}
-        <div className="lg:col-span-4 bg-[#141722] p-5 rounded-2xl border border-stone-800 space-y-5">
-          {/* Side Panel Tabs: Màu vải vs Kho phụ kiện */}
-          <div className="grid grid-cols-2 p-1 bg-stone-900 rounded-xl border border-stone-800">
-            <button
-              onClick={() => setActiveTabSide('colors')}
-              className={`py-2 text-xs font-bold rounded-lg transition ${
-                activeTabSide === 'colors'
-                  ? 'bg-amber-600 text-stone-950 shadow-md'
-                  : 'text-stone-400 hover:text-white'
-              }`}
-            >
-              Đổi màu vải
-            </button>
-            <button
-              onClick={() => setActiveTabSide('accessories')}
-              className={`py-2 text-xs font-bold rounded-lg transition ${
-                activeTabSide === 'accessories'
-                  ? 'bg-amber-600 text-stone-950 shadow-md'
-                  : 'text-stone-400 hover:text-white'
-              }`}
-            >
-              Kho Phụ Kiện
-            </button>
+        {/* COLUMN 3: Cột Phải (4 cols) - "Tùy chỉnh & Phụ kiện" */}
+        <div className="lg:col-span-4 bg-[#131620] rounded-2xl border border-stone-800/90 p-5 space-y-6 shadow-xl">
+          <div className="flex items-center justify-between pb-3 border-b border-stone-800">
+            <h2 className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+              <Palette className="w-4 h-4 text-amber-400" />
+              <span>Tùy chỉnh & Phụ kiện</span>
+            </h2>
           </div>
 
-          {/* TAB 1: COLOR PALETTE */}
-          {activeTabSide === 'colors' && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-stone-300 mb-1">
-                  Chọn màu cho: {selectedComponent === 'pants' ? 'Quần / Váy lụa' : 'Áo chính'}
-                </label>
-                <p className="text-[11px] text-stone-400">
-                  Bấm vào màu bên dưới để áp dụng trực tiếp lên mẫu mockup:
-                </p>
-              </div>
+          {/* SECTION 1: Đổi màu vải */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-stone-200">
+                Đổi màu vải ({selectedComponent === 'pants' ? 'Quần' : 'Áo chính'})
+              </span>
+              <span className="text-[10px] text-stone-400">Click để chọn</span>
+            </div>
 
-              <div className="grid grid-cols-4 gap-3">
-                {fabricColors.map((color) => {
-                  const isCurrent =
-                    (selectedComponent === 'pants' ? outfit.pantsColor : outfit.primaryColor) ===
-                    color.value;
-                  return (
-                    <button
-                      key={color.value}
-                      onClick={() => handleColorChange(color.value)}
-                      title={color.name}
-                      className={`group flex flex-col items-center gap-1.5 p-2 rounded-xl border transition cursor-pointer ${
-                        isCurrent
-                          ? 'bg-amber-950/30 border-amber-400 ring-2 ring-amber-500/30'
-                          : 'bg-stone-900 border-stone-800 hover:border-stone-700'
-                      }`}
-                    >
-                      <div
-                        className="w-8 h-8 rounded-full border border-white/20 shadow-inner group-hover:scale-110 transition"
-                        style={{ backgroundColor: color.value }}
+            <div className="grid grid-cols-5 gap-2.5">
+              {fabricColors.map((color) => {
+                const isSelected =
+                  (selectedComponent === 'pants' ? outfit.pantsColor : outfit.primaryColor) ===
+                  color.value;
+                return (
+                  <button
+                    key={color.value}
+                    onClick={() => handleColorChange(color.value)}
+                    title={color.name}
+                    className={`group relative aspect-square rounded-xl border flex flex-col items-center justify-center transition cursor-pointer ${
+                      isSelected
+                        ? 'border-amber-400 ring-2 ring-amber-500/40 scale-105'
+                        : 'border-stone-800 hover:border-stone-600'
+                    }`}
+                    style={{ backgroundColor: color.value }}
+                  >
+                    {isSelected && (
+                      <span className="w-2 h-2 rounded-full bg-white shadow-md" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* SECTION 2: Kho Phụ Kiện (Library Grid) */}
+          <div className="space-y-3 pt-4 border-t border-stone-800">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-stone-200">Kho Phụ Kiện</span>
+              <span className="text-[10px] text-amber-400 font-medium">Chọn để phối</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 max-h-[300px] overflow-y-auto pr-1">
+              {ACCESSORIES.map((acc) => {
+                const isEquipped =
+                  outfit.accessories.head?.id === acc.id ||
+                  outfit.accessories.hand?.id === acc.id ||
+                  outfit.accessories.neck?.id === acc.id ||
+                  outfit.accessories.foot?.id === acc.id;
+
+                const isRedFlag = acc.culturalCompatibility === 'red_flag';
+
+                return (
+                  <div
+                    key={acc.id}
+                    onClick={() => handleSelectAccessory(acc)}
+                    className={`p-2.5 rounded-xl border text-left transition cursor-pointer flex flex-col justify-between space-y-2 ${
+                      isEquipped
+                        ? 'bg-amber-950/30 border-amber-400 ring-1 ring-amber-500/30'
+                        : isRedFlag
+                        ? 'bg-red-950/20 border-red-900/50 hover:border-red-600/60'
+                        : 'bg-stone-900/90 border-stone-800 hover:border-stone-700'
+                    }`}
+                  >
+                    <div className="relative aspect-video rounded-lg overflow-hidden bg-black/40">
+                      <img
+                        src={acc.imageUrl}
+                        alt={acc.name}
+                        className="w-full h-full object-cover"
                       />
-                      <span className="text-[9px] text-stone-400 truncate w-full text-center">
-                        {color.name.split(' ')[0]}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+                      {isRedFlag && (
+                        <span className="absolute top-1 right-1 text-[8px] font-bold px-1 py-0.2 rounded bg-red-900/90 text-red-200">
+                          Red-flag
+                        </span>
+                      )}
+                    </div>
 
-              {/* Custom hex picker */}
-              <div className="pt-3 border-t border-stone-800 flex items-center justify-between">
-                <span className="text-xs text-stone-400">Tùy chỉnh mã màu:</span>
-                <input
-                  type="color"
-                  value={selectedComponent === 'pants' ? outfit.pantsColor : outfit.primaryColor}
-                  onChange={(e) => handleColorChange(e.target.value)}
-                  className="w-8 h-8 rounded border border-stone-700 cursor-pointer bg-transparent"
-                />
-              </div>
-            </div>
-          )}
+                    <div>
+                      <div className="text-[11px] font-bold text-stone-100 truncate">
+                        {acc.name}
+                      </div>
+                      <div className="text-[9px] text-stone-400 truncate">
+                        {acc.categoryLabel}
+                      </div>
+                    </div>
 
-          {/* TAB 2: ACCESSORIES LIBRARY */}
-          {activeTabSide === 'accessories' && (
-            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-stone-300">Thư viện phụ kiện cổ & tân:</span>
-                <span className="text-[10px] text-stone-400">{ACCESSORIES.length} món</span>
-              </div>
-
-              <div className="space-y-2.5">
-                {ACCESSORIES.map((acc) => {
-                  const isEquipped =
-                    outfit.accessories.head?.id === acc.id ||
-                    outfit.accessories.hand?.id === acc.id ||
-                    outfit.accessories.neck?.id === acc.id ||
-                    outfit.accessories.foot?.id === acc.id;
-
-                  const isRedFlag = acc.culturalCompatibility === 'red_flag';
-
-                  return (
-                    <div
-                      key={acc.id}
-                      onClick={() => handleSelectAccessory(acc)}
-                      className={`p-3 rounded-xl border transition flex items-center justify-between gap-3 cursor-pointer ${
+                    <button
+                      type="button"
+                      className={`w-full py-1 rounded text-[10px] font-bold transition ${
                         isEquipped
-                          ? 'bg-amber-950/30 border-amber-400 ring-1 ring-amber-500/30'
-                          : isRedFlag
-                          ? 'bg-red-950/15 border-red-900/40 hover:border-red-600/50'
-                          : 'bg-stone-900/80 border-stone-800 hover:border-stone-700'
+                          ? 'bg-amber-500 text-stone-950'
+                          : 'bg-stone-800 text-stone-300 hover:bg-stone-700'
                       }`}
                     >
-                      <div className="flex items-center gap-3 overflow-hidden">
-                        <img
-                          src={acc.imageUrl}
-                          alt={acc.name}
-                          className="w-11 h-11 rounded-lg object-cover border border-stone-700 shrink-0"
-                        />
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-xs font-semibold text-stone-100 truncate">
-                              {acc.name}
-                            </span>
-                            {isRedFlag && (
-                              <span className="text-[9px] px-1 py-0.2 rounded bg-red-900/50 text-red-300 border border-red-700/50">
-                                Cảnh báo
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-[10px] text-stone-400 truncate">
-                            {acc.categoryLabel} · {acc.description}
-                          </div>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        className={`text-xs font-bold px-2.5 py-1 rounded-md shrink-0 transition ${
-                          isEquipped
-                            ? 'bg-amber-500 text-stone-950'
-                            : 'bg-stone-800 text-stone-300 hover:bg-stone-700'
-                        }`}
-                      >
-                        {isEquipped ? 'Đang dùng' : 'Chọn'}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
+                      {isEquipped ? 'Đang dùng' : 'Chọn phối'}
+                    </button>
+                  </div>
+                );
+              })}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

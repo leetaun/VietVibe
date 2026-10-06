@@ -71,14 +71,11 @@ export const LookbookView: React.FC<LookbookViewProps> = ({
       {/* Header Info & Create Button */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-stone-800">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-widest text-amber-400">
-            Bộ Sưu Tập Của Tôi
-          </div>
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-stone-100 mt-1">
-            Lookbook Cá Nhân
+          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-stone-100 uppercase tracking-wide">
+            LOOKBOOK CỦA TÔI
           </h1>
-          <p className="text-stone-400 text-sm mt-1">
-            Lưu giữ và chia sẻ các bản phối Việt phục theo từng sự kiện và chủ đề
+          <p className="text-stone-400 text-xs mt-1">
+            Quản lý và chia sẻ các album bản phối Việt phục theo từng sự kiện và chủ đề
           </p>
         </div>
 
@@ -90,7 +87,7 @@ export const LookbookView: React.FC<LookbookViewProps> = ({
               setIsCreatingModalOpen(true);
             }
           }}
-          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-stone-950 font-bold text-sm shadow-md shadow-amber-950/40 transition cursor-pointer self-start md:self-auto"
+          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-stone-950 font-bold text-xs tracking-wide shadow-md shadow-amber-950/40 transition cursor-pointer self-start md:self-auto"
         >
           <Plus className="w-4 h-4 text-stone-950 stroke-[3]" />
           <span>TẠO LOOKBOOK MỚI</span>
@@ -202,9 +199,10 @@ export const LookbookView: React.FC<LookbookViewProps> = ({
                 <button
                   onClick={handleCopyShareLink}
                   title="Chia sẻ link Lookbook"
-                  className="p-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-400 hover:text-amber-300 border border-stone-700 transition cursor-pointer"
+                  className="py-2 px-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-200 hover:text-white text-xs font-semibold border border-stone-700 transition flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <Share2 className="w-3.5 h-3.5" />
+                  <Share2 className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Chia sẻ</span>
                 </button>
               </div>
             </div>

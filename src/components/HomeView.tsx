@@ -16,10 +16,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onStartStylistWithGarment
 }) => {
   return (
-    <div className="space-y-16 pb-20">
-      {/* 1. HERO BANNER */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#12141c] via-[#1a141c] to-[#14121a] border border-amber-900/30 p-8 sm:p-12 lg:p-16 shadow-2xl">
-        <div className="absolute inset-0 opacity-30 mix-blend-screen pointer-events-none">
+    <div className="space-y-16 pb-20 animate-fade-in">
+      {/* 1. HERO BANNER (Matching PDF STT 2) */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#12141c] via-[#1a141c] to-[#14121a] border border-amber-900/40 p-8 sm:p-12 lg:p-16 shadow-2xl">
+        <div className="absolute inset-0 opacity-40 mix-blend-screen pointer-events-none">
           <img
             src="https://images.unsplash.com/photo-1528722828814-77b9b83aafb2?auto=format&fit=crop&w=1600&q=80"
             alt="Việt phục nền"
@@ -35,7 +35,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
 
           <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-black text-amber-100 tracking-tight leading-[1.15]">
-            KHÁM PHÁ DI SẢN <br />
+            KHÁM PHÁ DI SẢN - <br />
             <span className="bg-gradient-to-r from-amber-300 via-amber-200 to-amber-500 bg-clip-text text-transparent">
               SÁNG TẠO PHONG CÁCH
             </span>
@@ -48,7 +48,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <button
               onClick={() => onNavigate('stylist_wizard')}
-              className="flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-stone-950 font-bold text-sm tracking-wide shadow-xl shadow-amber-950/50 transition cursor-pointer"
+              className="flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-stone-950 font-bold text-sm tracking-wide shadow-xl shadow-amber-950/50 transition cursor-pointer"
             >
               <Shirt className="w-4 h-4 text-stone-950" />
               <span>BẮT ĐẦU PHỐI ĐỒ</span>
@@ -57,198 +57,145 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
             <button
               onClick={() => onNavigate('explore')}
-              className="flex items-center gap-2 px-5 py-3.5 rounded-xl bg-stone-900/80 hover:bg-stone-800 text-stone-200 hover:text-white border border-stone-700/70 text-sm font-semibold transition cursor-pointer"
+              className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-stone-900/80 hover:bg-stone-800 text-stone-200 hover:text-white border border-stone-700/70 text-sm font-semibold transition cursor-pointer"
             >
               <Compass className="w-4 h-4 text-amber-400" />
               <span>Khám phá ngay</span>
             </button>
           </div>
-
-          {/* Quick Metrics */}
-          <div className="pt-6 border-t border-stone-800/80 grid grid-cols-3 gap-4 text-left">
-            <div>
-              <div className="font-serif text-xl font-bold text-amber-300">6+</div>
-              <div className="text-xs text-stone-400">Dòng Việt phục chuẩn</div>
-            </div>
-            <div>
-              <div className="font-serif text-xl font-bold text-amber-300">100%</div>
-              <div className="text-xs text-stone-400">Kiểm chuẩn văn hóa</div>
-            </div>
-            <div>
-              <div className="font-serif text-xl font-bold text-amber-300">AI Try-On</div>
-              <div className="text-xs text-stone-400">Ướm đồ trực tiếp</div>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* 2. VIỆT PHỤC TIÊU BIỂU (FEATURED CAROUSEL / SLIDER) */}
+      {/* 2. VIỆT PHỤC TIÊU BIỂU (FEATURED - Matching PDF STT 2) */}
       <section className="space-y-6">
         <div className="flex items-end justify-between">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-amber-400">
-              <Award className="w-4 h-4" />
-              <span>Di Sản Tiêu Biểu</span>
+            <div className="text-xs font-semibold uppercase tracking-widest text-amber-400">
+              Di sản phục trang
             </div>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-100 mt-1">
-              Việt Phục Tiêu Biểu
+              VIỆT PHỤC TIÊU BIỂU
             </h2>
-            <p className="text-stone-400 text-sm mt-1">
-              Tuyển tập những phục trang tinh hoa của các triều đại Lý, Trần, Lê, Nguyễn
+            <p className="text-stone-400 text-xs mt-1">
+              Thẻ trượt giới thiệu nhanh các bộ trang phục nổi bật kèm triều đại
             </p>
           </div>
           <button
             onClick={() => onNavigate('explore')}
-            className="flex items-center gap-1 text-sm font-semibold text-amber-400 hover:text-amber-300 transition"
+            className="flex items-center gap-1 text-xs font-semibold text-amber-400 hover:text-amber-300 transition cursor-pointer"
           >
             <span>Xem tất cả</span>
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Horizontal scroll cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {garments.slice(0, 4).map((garment) => (
+        {/* Featured Cards Row */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          {garments.slice(0, 5).map((garment) => (
             <div
               key={garment.id}
-              className="group relative bg-[#151824] rounded-2xl border border-stone-800/80 overflow-hidden hover:border-amber-600/50 hover:shadow-xl hover:shadow-amber-950/20 transition flex flex-col"
+              onClick={() => onSelectGarmentDetail(garment)}
+              className="group cursor-pointer bg-[#141722] rounded-2xl border border-stone-800/80 p-4 hover:border-amber-500/50 hover:bg-[#181c2b] transition flex flex-col items-center text-center space-y-3"
             >
-              {/* Image Thumbnail with Dynasty Badge */}
-              <div className="relative h-64 overflow-hidden bg-stone-900">
+              {/* Circular portrait image matching PDF mockup */}
+              <div className="relative w-28 h-28 rounded-full overflow-hidden border-2 border-stone-700 group-hover:border-amber-400 group-hover:scale-105 transition shadow-lg">
                 <img
                   src={garment.imageUrl}
                   alt={garment.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                  className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#151824] via-transparent to-black/30" />
-                
-                {/* Dynasty tag */}
-                <span className="absolute top-3 left-3 text-[11px] font-semibold px-2.5 py-1 rounded bg-stone-950/80 backdrop-blur-sm text-amber-300 border border-amber-500/30">
-                  {garment.dynastyLabel.split('(')[0].trim()}
-                </span>
-
-                <span className="absolute top-3 right-3 text-[11px] font-medium px-2 py-0.5 rounded bg-black/60 text-stone-300 backdrop-blur-sm">
-                  {garment.gender}
-                </span>
               </div>
 
-              {/* Card Content */}
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div>
-                  <h3 className="font-serif text-xl font-bold text-amber-100 group-hover:text-amber-300 transition">
-                    {garment.name}
-                  </h3>
-                  <p className="text-xs text-amber-400/90 font-medium line-clamp-1 mt-0.5">
-                    {garment.rankTitle}
-                  </p>
-                  <p className="text-xs text-stone-400 mt-2 line-clamp-2 leading-relaxed">
-                    {garment.description}
-                  </p>
-                </div>
-
-                {/* Actions */}
-                <div className="pt-3 border-t border-stone-800/80 flex items-center gap-2">
-                  <button
-                    onClick={() => onSelectGarmentDetail(garment)}
-                    className="flex-1 py-2 px-3 rounded-lg bg-stone-900 hover:bg-stone-800 text-stone-200 hover:text-white text-xs font-semibold border border-stone-700/80 transition flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Thẻ văn hóa</span>
-                  </button>
-                  <button
-                    onClick={() => onStartStylistWithGarment(garment)}
-                    className="py-2 px-3 rounded-lg bg-amber-600 hover:bg-amber-500 text-stone-950 text-xs font-bold transition flex items-center justify-center cursor-pointer"
-                    title="Phối đồ ngay với trang phục này"
-                  >
-                    <Shirt className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+              <div>
+                <h3 className="font-serif text-sm font-bold text-stone-100 group-hover:text-amber-300 transition">
+                  {garment.name}
+                </h3>
+                <span className="text-[11px] text-amber-400/90 font-mono block mt-0.5">
+                  {garment.dynastyLabel.split('(')[0].trim()}
+                </span>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 3. LỐI VÀO NHANH (QUICK ACCESS: 3 KHỐI CHỨC NĂNG TRỌNG TÂM) */}
+      {/* 3. KHỐI TRUY CẬP NHANH (QUICK ACCESS: 3 KHỐI TRỌNG TÂM - Matching PDF STT 2) */}
       <section className="space-y-6">
         <div>
           <div className="text-xs font-semibold uppercase tracking-widest text-amber-400">
-            Khám phá tính năng
+            Lối vào nhanh
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-100 mt-1">
-            Khối Truy Cập Nhanh
+            KHỐI TRUY CẬP NHANH
           </h2>
-          <p className="text-stone-400 text-sm mt-1">
-            Ba trải nghiệm trọng tâm dành cho bạn từ tiếp cận di sản tới ứng dụng thực tế
+          <p className="text-stone-400 text-xs mt-1">
+            3 khối chức năng trọng tâm: Stylist cá nhân hóa, AI Try-on ảo và Khám phá di sản
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1: Khám phá di sản */}
-          <div
-            onClick={() => onNavigate('explore')}
-            className="group cursor-pointer bg-[#151824] rounded-2xl border border-stone-800/80 p-7 hover:border-amber-600/50 hover:bg-[#191c2b] transition flex flex-col justify-between space-y-6"
-          >
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition">
-                <Compass className="w-6 h-6" />
-              </div>
-              <h3 className="font-serif text-xl font-bold text-stone-100 group-hover:text-amber-300 transition">
-                Khám Phá Di Sản
-              </h3>
-              <p className="text-stone-400 text-sm leading-relaxed">
-                Thư viện tra cứu nguồn gốc lịch sử, ý nghĩa hoa văn ngũ hành và quy chế triều đình của từng loại cổ phục Việt Nam.
-              </p>
-            </div>
-            <div className="flex items-center text-xs font-semibold text-amber-400 group-hover:text-amber-300">
-              <span>Mở thư viện phục trang</span>
-              <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-1 transition" />
-            </div>
-          </div>
-
-          {/* Card 2: AI Stylist cá nhân hóa */}
+          {/* Block 1: AI Stylist */}
           <div
             onClick={() => onNavigate('stylist_wizard')}
-            className="group cursor-pointer bg-gradient-to-b from-[#1b1c2b] to-[#151824] rounded-2xl border border-amber-500/30 p-7 hover:border-amber-400 hover:shadow-lg hover:shadow-amber-950/30 transition flex flex-col justify-between space-y-6 relative overflow-hidden"
+            className="group cursor-pointer bg-gradient-to-b from-[#1b1c2b] to-[#141722] rounded-2xl border border-amber-500/40 p-7 hover:border-amber-400 hover:shadow-xl hover:shadow-amber-950/30 transition flex flex-col justify-between space-y-6"
           >
-            <div className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-400/30">
-              Khuyên dùng
-            </div>
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 group-hover:scale-110 transition">
                 <Shirt className="w-6 h-6" />
               </div>
               <h3 className="font-serif text-xl font-bold text-amber-100 group-hover:text-amber-300 transition">
-                AI Stylist Phối Đồ
+                AI Stylist
               </h3>
-              <p className="text-stone-300 text-sm leading-relaxed">
-                Hệ thống AI đề xuất outfit trọn gói (áo, quần, mấn, hài, phụ kiện) theo sự kiện, phong cách truyền thống hay Gen Z Remix.
+              <p className="text-stone-300 text-xs leading-relaxed">
+                Gợi ý trang phục: Thuật toán AI phân tích bối cảnh, sự kiện và đề xuất trọn bộ outfit cổ phục kèm phụ kiện chuẩn mực.
               </p>
             </div>
-            <div className="flex items-center text-xs font-semibold text-amber-400 group-hover:text-amber-300">
+            <div className="flex items-center text-xs font-bold text-amber-400 group-hover:text-amber-300">
               <span>Bắt đầu thiết lập phối đồ</span>
               <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-1 transition" />
             </div>
           </div>
 
-          {/* Card 3: AI Try-On ảo */}
+          {/* Block 2: AI Try-on */}
           <div
             onClick={() => onNavigate('try_on_setup')}
-            className="group cursor-pointer bg-[#151824] rounded-2xl border border-stone-800/80 p-7 hover:border-emerald-600/50 hover:bg-[#191c2b] transition flex flex-col justify-between space-y-6"
+            className="group cursor-pointer bg-[#141722] rounded-2xl border border-stone-800 p-7 hover:border-emerald-600/50 hover:bg-[#181c2b] transition flex flex-col justify-between space-y-6"
           >
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition">
                 <Camera className="w-6 h-6" />
               </div>
               <h3 className="font-serif text-xl font-bold text-stone-100 group-hover:text-emerald-300 transition">
-                AI Virtual Try-On
+                AI Try-on
               </h3>
-              <p className="text-stone-400 text-sm leading-relaxed">
-                Tải ảnh cá nhân hoặc chọn ảnh mẫu, AI sẽ ghép bộ Việt phục và phụ kiện chân thực cùng thanh trượt so sánh Before/After.
+              <p className="text-stone-400 text-xs leading-relaxed">
+                Thử đồ ảo: Tải ảnh của bạn để AI mặc thử Việt phục trực quan kèm thanh trượt kéo Before / After so sánh chi tiết.
               </p>
             </div>
-            <div className="flex items-center text-xs font-semibold text-emerald-400 group-hover:text-emerald-300">
+            <div className="flex items-center text-xs font-bold text-emerald-400 group-hover:text-emerald-300">
               <span>Thử đồ trên ảnh thật</span>
+              <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-1 transition" />
+            </div>
+          </div>
+
+          {/* Block 3: Khám phá di sản */}
+          <div
+            onClick={() => onNavigate('explore')}
+            className="group cursor-pointer bg-[#141722] rounded-2xl border border-stone-800 p-7 hover:border-amber-600/50 hover:bg-[#181c2b] transition flex flex-col justify-between space-y-6"
+          >
+            <div className="space-y-4">
+              <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition">
+                <Compass className="w-6 h-6" />
+              </div>
+              <h3 className="font-serif text-xl font-bold text-stone-100 group-hover:text-amber-300 transition">
+                Khám phá
+              </h3>
+              <p className="text-stone-400 text-xs leading-relaxed">
+                Thư viện văn hóa: Tra cứu thông tin nguồn gốc, quy chế triều đình, hoa văn ngũ hành và các lưu ý bảo tồn của từng trang phục.
+              </p>
+            </div>
+            <div className="flex items-center text-xs font-bold text-amber-400 group-hover:text-amber-300">
+              <span>Mở thư viện cổ phục</span>
               <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-1 transition" />
             </div>
           </div>

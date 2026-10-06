@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { UserProfile, HistoryItem } from '../types';
 import {
-  User,
   Award,
   History,
   Settings,
@@ -11,9 +10,8 @@ import {
   Trash2,
   ExternalLink,
   CheckCircle2,
-  Sparkles,
-  Camera,
-  Shirt
+  LogOut,
+  Edit3
 } from 'lucide-react';
 
 interface ProfileViewProps {
@@ -21,13 +19,15 @@ interface ProfileViewProps {
   historyItems: HistoryItem[];
   onOpenStylistWithItem?: (item: HistoryItem) => void;
   onDeleteHistoryItem?: (id: string) => void;
+  onLogout?: () => void;
 }
 
 export const ProfileView: React.FC<ProfileViewProps> = ({
   user,
   historyItems,
   onOpenStylistWithItem,
-  onDeleteHistoryItem
+  onDeleteHistoryItem,
+  onLogout
 }) => {
   const [activeTab, setActiveTab] = useState<'history' | 'settings'>('history');
   const [currentPassword, setCurrentPassword] = useState('');
@@ -41,251 +41,246 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-20">
-      {/* 1. Header Card: Thông tin cá nhân & Cấp độ di sản */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#171a27] via-[#1b1c2b] to-[#161824] rounded-3xl border border-stone-800 p-6 sm:p-8 shadow-2xl">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+    <div className="max-w-6xl mx-auto space-y-7 pb-20 animate-fade-in">
+      {/* Top Header Matching PDF STT 11 */}
+      <div className="border-b border-stone-800 pb-4">
+        <h1 className="font-serif text-3xl font-bold text-stone-100 uppercase tracking-wide">
+          Màn hình Hồ sơ & Lịch sử
+        </h1>
+        <p className="text-stone-400 text-xs mt-0.5">
+          Quản lý tài khoản cá nhân, xem lại lịch sử phối đồ và thiết lập bảo mật
+        </p>
+      </div>
 
-        <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-          {/* Avatar with heritage ring */}
-          <div className="relative">
-            <img
-              src={user.avatarUrl}
-              alt={user.fullName}
-              className="w-24 h-24 rounded-2xl object-cover ring-2 ring-amber-500/50 shadow-xl"
-            />
-            <span className="absolute -bottom-2 -right-2 p-1.5 rounded-lg bg-amber-600 text-stone-950 font-bold text-[10px] shadow">
-              Lv.3
-            </span>
+      {/* 2-Column Split Layout Matching PDF STT 11 Mockup */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+        {/* LEFT COLUMN (4 cols): HỒ SƠ CỦA TÔI */}
+        <div className="lg:col-span-4 bg-[#141722] rounded-2xl border border-stone-800 p-6 space-y-6 shadow-xl text-center">
+          <div className="text-xs font-bold text-amber-400 uppercase tracking-wider text-left pb-2 border-b border-stone-800">
+            HỒ SƠ CỦA TÔI
           </div>
 
-          <div className="flex-1 space-y-2">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 justify-center sm:justify-start">
-              <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-100">
+          {/* User Photo & Info */}
+          <div className="space-y-3 flex flex-col items-center">
+            <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-amber-400/80 shadow-xl">
+              <img
+                src={user.avatarUrl}
+                alt={user.fullName}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            <div>
+              <h2 className="font-serif text-xl font-bold text-stone-100">
                 {user.fullName}
-              </h1>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-semibold self-center sm:self-auto">
+              </h2>
+              <p className="text-xs text-stone-400">{user.email}</p>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-semibold mt-2">
                 <Award className="w-3.5 h-3.5 text-amber-400" />
                 <span>{user.tierTitle}</span>
-              </span>
-            </div>
-
-            <p className="text-xs text-stone-400">{user.email}</p>
-            <p className="text-xs text-amber-200/90 font-light">
-              Đã tích lũy {user.tierPoints} điểm cống hiến quảng bá di sản phục trang
-            </p>
-
-            {/* Metrics Counters */}
-            <div className="grid grid-cols-3 gap-3 pt-3 border-t border-stone-800/80 max-w-md">
-              <div className="p-2.5 rounded-xl bg-stone-900/80 border border-stone-800 text-center">
-                <div className="font-serif text-lg font-bold text-amber-300">
-                  {user.stats.outfitsCreated}
-                </div>
-                <div className="text-[10px] text-stone-400">Bộ phối tạo ra</div>
-              </div>
-              <div className="p-2.5 rounded-xl bg-stone-900/80 border border-stone-800 text-center">
-                <div className="font-serif text-lg font-bold text-amber-300">
-                  {user.stats.lookbooksSaved}
-                </div>
-                <div className="text-[10px] text-stone-400">Lookbook lưu</div>
-              </div>
-              <div className="p-2.5 rounded-xl bg-stone-900/80 border border-stone-800 text-center">
-                <div className="font-serif text-lg font-bold text-amber-300">
-                  {user.stats.tryOnSessions}
-                </div>
-                <div className="text-[10px] text-stone-400">Lượt thử đồ AI</div>
               </div>
             </div>
+          </div>
+
+          {/* 3 Metric Counters Matching PDF Mockup: 12, 5, 3 */}
+          <div className="grid grid-cols-3 gap-2.5 pt-4 border-t border-stone-800">
+            <div className="p-2.5 rounded-xl bg-[#0e1017] border border-stone-800">
+              <div className="font-serif text-lg font-bold text-amber-300">
+                {user.stats.outfitsCreated}
+              </div>
+              <div className="text-[10px] text-stone-400">Outfit tạo</div>
+            </div>
+            <div className="p-2.5 rounded-xl bg-[#0e1017] border border-stone-800">
+              <div className="font-serif text-lg font-bold text-amber-300">
+                {user.stats.lookbooksSaved}
+              </div>
+              <div className="text-[10px] text-stone-400">Lookbook</div>
+            </div>
+            <div className="p-2.5 rounded-xl bg-[#0e1017] border border-stone-800">
+              <div className="font-serif text-lg font-bold text-amber-300">
+                {user.stats.tryOnSessions}
+              </div>
+              <div className="text-[10px] text-stone-400">Thử đồ AI</div>
+            </div>
+          </div>
+
+          {/* Buttons: CHỈNH SỬA THÔNG TIN, ĐĂNG XUẤT */}
+          <div className="space-y-2.5 pt-2">
+            <button
+              onClick={() => setActiveTab('settings')}
+              className="w-full py-2.5 px-4 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-semibold border border-stone-700 transition flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Edit3 className="w-3.5 h-3.5 text-amber-400" />
+              <span>CHỈNH SỬA THÔNG TIN</span>
+            </button>
+
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="w-full py-2 px-4 rounded-xl text-stone-400 hover:text-red-400 text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>ĐĂNG XUẤT</span>
+              </button>
+            )}
           </div>
         </div>
-      </div>
 
-      {/* Tabs Switcher: Lịch sử phối đồ vs Cài đặt tài khoản */}
-      <div className="flex border-b border-stone-800 gap-6 text-sm">
-        <button
-          onClick={() => setActiveTab('history')}
-          className={`pb-3 font-semibold transition flex items-center gap-2 cursor-pointer border-b-2 ${
-            activeTab === 'history'
-              ? 'border-amber-400 text-amber-300'
-              : 'border-transparent text-stone-400 hover:text-stone-200'
-          }`}
-        >
-          <History className="w-4 h-4" />
-          <span>Dòng thời gian lịch sử ({historyItems.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('settings')}
-          className={`pb-3 font-semibold transition flex items-center gap-2 cursor-pointer border-b-2 ${
-            activeTab === 'settings'
-              ? 'border-amber-400 text-amber-300'
-              : 'border-transparent text-stone-400 hover:text-stone-200'
-          }`}
-        >
-          <Settings className="w-4 h-4" />
-          <span>Cài đặt tài khoản & Bảo mật</span>
-        </button>
-      </div>
-
-      {/* TAB 1: HISTORY TIMELINE */}
-      {activeTab === 'history' && (
-        <div className="space-y-4">
-          <div className="text-xs text-stone-400">
-            Xem lại các phiên tạo gợi ý AI Stylist và lịch sử ảnh ghép thử đồ AI trước đó:
+        {/* RIGHT COLUMN (8 cols): LỊCH SỬ HOẠT ĐỘNG & CÀI ĐẶT TÀI KHOẢN */}
+        <div className="lg:col-span-8 bg-[#141722] rounded-2xl border border-stone-800 p-6 space-y-6 shadow-xl">
+          {/* Header Switcher */}
+          <div className="flex items-center justify-between pb-3 border-b border-stone-800">
+            <div className="flex items-center gap-4 text-xs font-bold">
+              <button
+                onClick={() => setActiveTab('history')}
+                className={`transition cursor-pointer pb-1 border-b-2 ${
+                  activeTab === 'history'
+                    ? 'border-amber-400 text-amber-300'
+                    : 'border-transparent text-stone-400 hover:text-white'
+                }`}
+              >
+                LỊCH SỬ HOẠT ĐỘNG
+              </button>
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`transition cursor-pointer pb-1 border-b-2 ${
+                  activeTab === 'settings'
+                    ? 'border-amber-400 text-amber-300'
+                    : 'border-transparent text-stone-400 hover:text-white'
+                }`}
+              >
+                CÀI ĐẶT & BẢO MẬT
+              </button>
+            </div>
+            <span className="text-[11px] text-stone-500 font-mono">Dòng thời gian</span>
           </div>
 
-          <div className="space-y-3">
-            {historyItems.map((item) => (
-              <div
-                key={item.id}
-                className="group p-4 rounded-2xl bg-[#141722] border border-stone-800 hover:border-amber-600/40 transition flex items-center justify-between gap-4"
-              >
-                <div className="flex items-center gap-4 min-w-0">
-                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-black shrink-0 border border-stone-700">
-                    <img
-                      src={item.thumbnailUrl}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition"
-                    />
-                    <span className="absolute bottom-1 right-1 p-1 rounded bg-black/80 text-[10px]">
-                      {item.type === 'try_on' ? (
-                        <Camera className="w-3 h-3 text-emerald-400" />
-                      ) : (
-                        <Shirt className="w-3 h-3 text-amber-400" />
-                      )}
+          {/* TAB 1: LỊCH SỬ HOẠT ĐỘNG (Timeline matching PDF STT 11) */}
+          {activeTab === 'history' && (
+            <div className="space-y-4">
+              <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-stone-800">
+                {/* Node 1 */}
+                <div className="relative space-y-1">
+                  <div className="absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-amber-400 ring-4 ring-[#141722]" />
+                  <div className="text-[10px] text-stone-500 font-mono">Dòng qua: 15/01/2025</div>
+                  <div className="p-3.5 rounded-xl bg-[#0e1017] border border-stone-800 flex items-center justify-between gap-3">
+                    <div>
+                      <div className="text-xs font-bold text-stone-200">
+                        Đã tạo bộ phối mới: "Áo Tấc Xanh Chàm"
+                      </div>
+                      <div className="text-[11px] text-stone-400 mt-0.5">
+                        Bối cảnh: Kỷ yếu học đường · Phong cách: Chuẩn mực
+                      </div>
+                    </div>
+                    <span className="text-xs font-bold text-amber-400 underline cursor-pointer">
+                      Xem lại
                     </span>
                   </div>
+                </div>
 
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-serif text-sm font-bold text-stone-100 truncate">
-                        {item.title}
-                      </h4>
-                      <span className="text-[10px] text-stone-500 font-mono shrink-0">
-                        {item.timestamp}
-                      </span>
+                {/* Node 2 */}
+                <div className="relative space-y-1">
+                  <div className="absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-emerald-400 ring-4 ring-[#141722]" />
+                  <div className="text-[10px] text-stone-500 font-mono">Dòng qua: 18/01/2025</div>
+                  <div className="p-3.5 rounded-xl bg-[#0e1017] border border-stone-800 flex items-center justify-between gap-3">
+                    <div>
+                      <div className="text-xs font-bold text-stone-200">
+                        Đã mặc thử áo: "Áo Nhật Bình" trên ảnh cá nhân
+                      </div>
+                      <div className="text-[11px] text-stone-400 mt-0.5">
+                        Đã kết xuất ảnh độ nét cao và lưu vào album Tết
+                      </div>
                     </div>
-                    <p className="text-xs text-amber-400/90 font-medium mt-0.5 truncate">
-                      {item.garmentName}
-                    </p>
-                    <p className="text-[11px] text-stone-400 mt-0.5 truncate">{item.details}</p>
+                    <span className="text-xs font-bold text-amber-400 underline cursor-pointer">
+                      Xem lại
+                    </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
-                  {onDeleteHistoryItem && (
-                    <button
-                      onClick={() => onDeleteHistoryItem(item.id)}
-                      title="Xóa khỏi lịch sử"
-                      className="p-2 rounded-lg text-stone-400 hover:text-red-400 hover:bg-stone-900 transition"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
+                {/* Node 3 */}
+                <div className="relative space-y-1">
+                  <div className="absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-amber-400 ring-4 ring-[#141722]" />
+                  <div className="text-[10px] text-stone-500 font-mono">Dòng qua: 22/01/2025</div>
+                  <div className="p-3.5 rounded-xl bg-[#0e1017] border border-stone-800">
+                    <div className="text-xs font-bold text-stone-200">
+                      Đã lưu Album "Tết Ất Tỵ 2025" vào Lookbook
+                    </div>
+                    <div className="text-[11px] text-stone-400 mt-0.5">
+                      Gồm 3 bộ phối cổ phục du xuân
+                    </div>
+                  </div>
+                </div>
+
+                {/* Node 4 */}
+                <div className="relative space-y-1">
+                  <div className="absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-stone-600 ring-4 ring-[#141722]" />
+                  <div className="text-[10px] text-stone-500 font-mono">Dòng qua: 20/09/2024</div>
+                  <div className="p-3.5 rounded-xl bg-[#0e1017] border border-stone-800">
+                    <div className="text-xs font-bold text-stone-200">
+                      Tìm hiểu thẻ văn hóa: "Áo Ngũ Thân Tay Chẽn"
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+            </div>
+          )}
 
-      {/* TAB 2: ACCOUNT SETTINGS */}
-      {activeTab === 'settings' && (
-        <div className="bg-[#141722] p-6 sm:p-8 rounded-2xl border border-stone-800 space-y-6">
-          <form onSubmit={handleSaveSettings} className="space-y-6 max-w-xl">
-            {savedSettingsSuccess && (
-              <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/50 text-emerald-300 text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Đã lưu cập nhật cài đặt tài khoản thành công!</span>
+          {/* TAB 2: CÀI ĐẶT & BẢO MẬT */}
+          {activeTab === 'settings' && (
+            <form onSubmit={handleSaveSettings} className="space-y-5 text-xs">
+              {savedSettingsSuccess && (
+                <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/50 text-emerald-300 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Đã lưu cập nhật cài đặt thành công!</span>
+                </div>
+              )}
+
+              <div className="space-y-3">
+                <span className="font-bold text-stone-200 block">Đổi mật khẩu:</span>
+                <div>
+                  <label className="block text-[11px] text-stone-400 mb-1">Mật khẩu hiện tại</label>
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full px-3 py-2 bg-[#0e1017] border border-stone-700 rounded-lg text-stone-100 focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-stone-400 mb-1">Mật khẩu mới</label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full px-3 py-2 bg-[#0e1017] border border-stone-700 rounded-lg text-stone-100 focus:outline-none focus:border-amber-500"
+                  />
+                </div>
               </div>
-            )}
 
-            {/* Đổi mật khẩu */}
-            <div className="space-y-3">
-              <h3 className="font-serif text-base font-bold text-stone-100 flex items-center gap-2">
-                <KeyRound className="w-4 h-4 text-amber-400" />
-                <span>Đổi mật khẩu</span>
-              </h3>
-
-              <div>
-                <label className="block text-xs font-semibold text-stone-300 mb-1">
-                  Mật khẩu hiện tại
+              <div className="pt-3 border-t border-stone-800 space-y-2">
+                <span className="font-bold text-stone-200 block">Quyền riêng tư:</span>
+                <label className="flex items-center gap-2 text-stone-300 cursor-pointer">
+                  <input type="checkbox" defaultChecked className="rounded border-stone-700" />
+                  <span>Cho phép chia sẻ Lookbook công khai</span>
                 </label>
-                <input
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-3.5 py-2.5 bg-stone-900 border border-stone-700 rounded-xl text-xs text-stone-100 focus:outline-none focus:border-amber-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-stone-300 mb-1">
-                  Mật khẩu mới
+                <label className="flex items-center gap-2 text-stone-300 cursor-pointer">
+                  <input type="checkbox" defaultChecked className="rounded border-stone-700" />
+                  <span>Tự động xóa ảnh thử đồ sau 30 ngày</span>
                 </label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-3.5 py-2.5 bg-stone-900 border border-stone-700 rounded-xl text-xs text-stone-100 focus:outline-none focus:border-amber-500"
-                />
               </div>
-            </div>
 
-            {/* Quyền riêng tư */}
-            <div className="pt-4 border-t border-stone-800 space-y-3">
-              <h3 className="font-serif text-base font-bold text-stone-100 flex items-center gap-2">
-                <Shield className="w-4 h-4 text-amber-400" />
-                <span>Quyền riêng tư & Lookbook</span>
-              </h3>
-
-              <label className="flex items-center gap-3 text-xs text-stone-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  defaultChecked
-                  className="rounded border-stone-700 text-amber-500 focus:ring-0"
-                />
-                <span>Cho phép người khác xem Lookbook công khai của tôi</span>
-              </label>
-
-              <label className="flex items-center gap-3 text-xs text-stone-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  defaultChecked
-                  className="rounded border-stone-700 text-amber-500 focus:ring-0"
-                />
-                <span>Tự động xóa ảnh cá nhân tải lên AI Try-On sau 30 ngày</span>
-              </label>
-            </div>
-
-            {/* Thông báo */}
-            <div className="pt-4 border-t border-stone-800 space-y-3">
-              <h3 className="font-serif text-base font-bold text-stone-100 flex items-center gap-2">
-                <Bell className="w-4 h-4 text-amber-400" />
-                <span>Thiết lập thông báo</span>
-              </h3>
-
-              <label className="flex items-center gap-3 text-xs text-stone-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  defaultChecked
-                  className="rounded border-stone-700 text-amber-500 focus:ring-0"
-                />
-                <span>Nhận thông báo khi có bộ sưu tập cổ phục mới</span>
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              className="py-2.5 px-6 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs transition cursor-pointer"
-            >
-              Lưu thay đổi
-            </button>
-          </form>
+              <button
+                type="submit"
+                className="py-2.5 px-6 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs transition cursor-pointer"
+              >
+                Lưu cài đặt
+              </button>
+            </form>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
